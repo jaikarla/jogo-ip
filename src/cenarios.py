@@ -3,11 +3,13 @@ import pygame
 #define a estrutura de bacground do jogo
 #DEVE SER INSTANCIADA NO JOGO
 
+#configurações da tela do labirinto
+WIDTH, HEIGHT = 1280, 720
+TILE = 40
 
-class Cenarios:
-    def __init__(self):
-        self.background = None  #carregar a imagem de background
+FPS = 60
 
-    def desenhar(self, tela):
-        #lógica para desenhar o mapa na tela
-        pass
+COR_PAREDE = (120, 120, 120)
+COR_JACK = (0, 0, 255)
+COR_MORCEGO = (255, 0, 0)
+COR_NATAL = (0, 200, 0)

@@ -1,5 +1,7 @@
 import pygame
 
+from src.cenarios import TILE, COR_JACK
+
 class Jogador: #representa o jogador no jogo
     
     #---------------------------------------------------------------
@@ -9,29 +11,35 @@ class Jogador: #representa o jogador no jogo
     # efeitos de power-ups (presente especial)
     #---------------------------------------------------------------
     
-    def __init__(self, y, x):
-        #definir a posição inicial do jogador
-        self.rect = self.image.get_rect(topleft=(x, y)) 
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.velocidade = 3
+        self.rect = pygame.Rect(self.x, self.y, TILE-10, TILE-10)
 
-        self.velocidade = 5
-        self.vidas = 3
+    #move o jogador conforme as teclas pressionadas
+    def mover(self, teclas, labirinto):
+        vel_x = vel_y = 0
 
-        #pontuação
-        self.presentes = 0
-        self.meias = 0
-        self.aboboras = 0
+        if teclas[pygame.K_UP]: vel_y = -self.velocidade
+        if teclas[pygame.K_DOWN]: vel_y = self.velocidade
+        if teclas[pygame.K_LEFT]: vel_x = -self.velocidade
+        if teclas[pygame.K_RIGHT]: vel_x = self.velocidade
 
-        #efeito do presente especial
-        self.presente_especial = False
+        novo_rect = pygame.Rect(self.x + vel_x, self.y, TILE-10, TILE-10)
+        if not labirinto.colide_parede(novo_rect):
+            self.x += vel_x
 
-    #controla o movimento do jogador
-    def mover(self):
-        teclas = pygame.key.get_pressed()
+        novo_rect = pygame.Rect(self.x, self.y + vel_y, TILE-10, TILE-10)
+        if not labirinto.colide_parede(novo_rect):
+            self.y += vel_y
 
-        if teclas[pygame.K_UP]:
-            self.rect.y -= self.velocidade # mover para cima
-        if teclas[pygame.K_DOWN]:
-            self.rect.y += self.velocidade # mover para baixo
+        self.rect.topleft = (self.x, self.y)
+
+    #desenha o jogador na tela
+    def desenhar(self, tela):
+        pygame.draw.rect(tela, COR_JACK, self.rect)
+
 
 
 

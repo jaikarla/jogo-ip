@@ -1,7 +1,10 @@
 import random
 
-from items import presente, meia, abobora_estragada, presente_especial
-from enemies import morcego
+from src.items.presente import Presente
+from src.items.meia import Meia
+from src.items.aboboraEstragada import aboboraEstragada
+from src.items.presenteEspecial import presenteEspecial
+from src.enemies.morcego import Morcego
 
 
 #essa classe gerencia as aparições de itens e inimigos no jogo
@@ -12,12 +15,3 @@ from enemies import morcego
 #DEVE SER INSTANCIADA NO JOGO
 
 
-class Aparicoes:
-    def __init__(self):
-        self.items = []
-        self.ememies = []
-
-    def atualizar(self, jogador):
-        #identificar a coleta de itens
-        #identificar colisão com morcegos
-        pass

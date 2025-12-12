@@ -1,53 +1,52 @@
 import pygame
 
-from jogador import Jogador #importar a classe Jogador
-from aparicoes import Aparicoes #importar a classe Aparicoes
-from cenarios import Cenarios #importar a classe Cenarios
-from pontuacoes import Pontuacoes #importar a classe Pontuações
-
-#---------------------------------------------------------------
-#Cérebro do jogo - aqui controla-se o fluxo principal do jogo
-#- loop principal
-#- atualização lógica
-#- desenho na tela
-#- troca de estados (do menu para o jogo, do jogo para a tela de game over, etc)
-#---------------------------------------------------------------
+from src.cenarios import WIDTH, HEIGHT, FPS
+from src.labirinto import Labirinto
+from src.jogador import Jogador as Jack #jack é o jogador
+from src.enemies.morcego import Morcego
 
 class Jogo:
-    def __init__(self, tela):
-        self.tela = tela
+    #inicializa o jogo
+    def __init__(self):
+        pygame.init()
+        self.tela = pygame.display.set_mode((WIDTH, HEIGHT))
+        pygame.display.set_caption("O pesadelo de Jack")
         self.clock = pygame.time.Clock()
 
-        #estados do jogo
-        self.state = "menu"  #estado inicial do jogo
-        self.state = "jogando"  #quando o jogo está em andamento
-        self.state = "game_over"  #quando o jogador perde todas as vidas
-        self.state = "vitoria"  #quando o jogador vence o jogo
+        self.labirinto = Labirinto()
+        x, y = self.labirinto.posicao_inicial_jack()
+        self.jack = Jack(x, y)
+        self.morcego = Morcego(20*40, 8*40)
 
-        #instanciar os componentes do jogo
-        self.jogador = Jogador(300, 100)  #posição inicial do jogador
-        self.aparicoes = Aparicoes()
-        self.cenarios = Cenarios()
-        self.pontuacoes = Pontuacoes()
+        self.rodando = True
 
-    def rodar(self):
-        rodando = True
-        while rodando:
-            for evento in pygame.event.get():
-                if evento.type == pygame.QUIT:
-                    rodando = False
+    #executa o loop principal do jogo
+    def executar(self):
+        while self.rodando:
+            self.tela.fill((0, 0, 0))
 
-            #atualizar lógica do jogo
-            self.jogador.mover()
-            self.aparicoes.atualizar()
-            self.pontuacoes.atualizar_pontuacao(
-                self.jogador.presentes,
-                self.jogador.meias,
-                self.jogador.aboboras
-            )
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.rodando = False
 
-            #desenhar na tela
-            self.cenarios.desenhar(self.tela)
-            self.jogador.desenhar(self.tela)
-            self.aparicoes.desenhar(self.tela)
-            self.pontuacoes.desenhar(self.tela)
+            teclas = pygame.key.get_pressed()
+
+            self.jack.mover(teclas, self.labirinto)
+            self.morcego.perseguir(self.jack)
+
+            self.labirinto.desenhar(self.tela)
+            self.jack.desenhar(self.tela)
+            self.morcego.desenhar(self.tela)
+
+            if self.jack.rect.colliderect(self.morcego.rect):
+                print("Jack foi pego!")
+                self.rodando = False
+
+            if self.labirinto.chegou_no_natal(self.jack.x, self.jack.y):
+                print("Jack chegou ao Natal 🎄")
+                self.rodando = False
+
+            pygame.display.update()
+            self.clock.tick(FPS)
+
+        pygame.quit()
