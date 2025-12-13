@@ -1,5 +1,4 @@
 import pygame
-
 from src.cenarios import TILE
 
 class Morcego:
@@ -10,23 +9,28 @@ class Morcego:
     # - animação das asas (4 frames)
     # ---------------------------------------------------------------
 
-    #ainda vou alterar coisas aqui - jai
     def __init__(self, x, y):
-        #posicao inicial
-        self.x = x
-        self.y = y
+        # posição lógica (float)
+        self.pos = pygame.Vector2(x, y)
 
-        #velocidade do morcego
-        self.velocidade = 0.8
+        # velocidade do morcego
+        self.velocidade = 0.7
 
-        #tamanho do morcego
+        # tamanho do morcego
         self.largura = TILE - 4
         self.altura = TILE - 4
 
-        # rect usado para posição / colisão
-        self.rect = pygame.Rect(self.x, self.y, self.largura, self.altura)
+        # rect usado para colisão / desenho (inteiro)
+        self.rect = pygame.Rect(
+            int(self.pos.x),
+            int(self.pos.y),
+            self.largura,
+            self.altura
+        )
 
-        #carrega as imagens e frames do morcego
+        # -----------------------------------------------------------
+        # carrega frames da animação
+        # -----------------------------------------------------------
         self.frames = [
             pygame.image.load('assets/inimigos/morcego1.png').convert_alpha(),
             pygame.image.load('assets/inimigos/morcego2.png').convert_alpha(),
@@ -34,7 +38,7 @@ class Morcego:
             pygame.image.load('assets/inimigos/morcego4.png').convert_alpha()
         ]
 
-        #redimensionando os frames
+        # redimensiona os frames
         self.frames = [
             pygame.transform.scale(frame, (self.largura, self.altura))
             for frame in self.frames
@@ -43,30 +47,35 @@ class Morcego:
         # controle da animação
         self.frame_atual = 0
         self.tempo_animacao = 0
-        self.vel_animacao = 0.2  # quanto maior, mais rápido bate a asa
+        self.vel_animacao = 0.2
 
-        # frame inicial
         self.imagem_atual = self.frames[0]
 
-    #persegue o Jack
+    # ---------------------------------------------------------------
+    # persegue o Jack
+    # ---------------------------------------------------------------
     def perseguir(self, jack):
-        if jack.x > self.x:
-            self.x += self.velocidade
-        elif jack.x < self.x:
-            self.x -= self.velocidade
+        direcao = pygame.Vector2(
+            jack.hitbox.centerx - self.rect.centerx,
+            jack.hitbox.centery - self.rect.centery
+        )
 
-        if jack.y > self.y:
-            self.y += self.velocidade
-        elif jack.y < self.y:
-            self.y -= self.velocidade
+        # evita divisão por zero
+        if direcao.length() != 0:
+            direcao = direcao.normalize()
 
-        # atualiza rect
-        self.rect.topleft = (self.x, self.y)
+        # move o morcego
+        self.pos += direcao * self.velocidade
+
+        # atualiza rect (inteiro)
+        self.rect.topleft = (int(self.pos.x), int(self.pos.y))
 
         # anima enquanto se move
         self.animar()
 
-    #controla animação das asas
+    # ---------------------------------------------------------------
+    # controla a animação das asas
+    # ---------------------------------------------------------------
     def animar(self):
         self.tempo_animacao += self.vel_animacao
 
@@ -75,7 +84,8 @@ class Morcego:
             self.frame_atual = (self.frame_atual + 1) % len(self.frames)
             self.imagem_atual = self.frames[self.frame_atual]
 
-    #desenha o morcego na tela
+    # ---------------------------------------------------------------
+    # desenha o morcego na tela
+    # ---------------------------------------------------------------
     def desenhar(self, tela):
         tela.blit(self.imagem_atual, self.rect)
-

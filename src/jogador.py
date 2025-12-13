@@ -8,6 +8,7 @@ class Jogador:
     # - sprite do personagem (Jack)
     # - movimentação
     # - colisão com paredes
+    #sistema de vidas e invencibilidade
     # ---------------------------------------------------------------
 
     def __init__(self, x, y):
@@ -32,6 +33,14 @@ class Jogador:
             hitbox_altura
         )
 
+        # vidas do jogador
+        self.vidas = 3
+
+        # invencibilidade após dano
+        self.invencivel = False
+        self.tempo_invencivel = 0
+        self.duracao_invencivel = 1500  # ms (1.5s)
+
         # rect do sprite
         self.rect = pygame.Rect(self.x, self.y, self.largura, self.altura)
 
@@ -49,6 +58,22 @@ class Jogador:
 
         # imagem inicial
         self.imagem_atual = self.img_frente
+
+    # jogador recebe dano
+    def receber_dano(self):
+        if not self.invencivel:
+            self.vidas -= 1
+            self.invencivel = True
+            self.tempo_invencivel = 0
+            return True  # dano recebido
+        return False  # sem dano (invencível) 
+    
+    def atualizar_invencibilidade(self, dt):
+        if self.invencivel:
+            self.tempo_invencivel += dt
+            if self.tempo_invencivel >= self.duracao_invencivel:
+                self.invencivel = False
+                self.tempo_invencivel = 0
 
     # movimentação do jogador
     def mover(self, teclas, labirinto):
