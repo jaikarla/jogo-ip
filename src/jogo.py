@@ -55,6 +55,13 @@ class Jogo:
         self.imagem_coracao = pygame.image.load('assets/coracao.png').convert_alpha()
         self.imagem_coracao = pygame.transform.scale(self.imagem_coracao, (40, 40))
 
+        # ADICIONA AS IMAGENS DE VITÓRIA E DERROTA
+        self.imagem_gameover = pygame.image.load('assets/gameover.png').convert_alpha() # Derrota
+        self.imagem_gameover = pygame.transform.scale(self.imagem_gameover, (WIDTH, HEIGHT))
+
+        self.imagem_youwin = pygame.image.load('assets/youwin.png').convert_alpha() # Vitoria
+        self.imagem_youwin = pygame.transform.scale(self.imagem_youwin, (WIDTH, HEIGHT))
+
         # Lista de coletavéis no mapa 
         self.itens = []
         self.espalhar_itens()
@@ -252,6 +259,11 @@ class Jogo:
             if self.jack.vidas <= 0 or not self.jack.vivo:
                 game_over.play()
                 print("Jack perdeu todas as vidas! Fim de jogo.")
+
+                # Mostra a tela de game over
+                self.tela.blit(self.imagem_gameover, (0, 0))
+                pygame.display.update()
+                pygame.time.wait(3000)  # 3 segundos antes de fechar
                 self.rodando = False
 
             # Verificar vitória
@@ -259,11 +271,22 @@ class Jogo:
                                               self.jack.hitbox.centery):
                 if self.jack.presentes >= 7 and self.jack.meias >= 7: 
                     print("Jack chegou ao Natal 🎄")
-                    # chamar a tela de vitória aqui
+
+                    # Mostra a tela de vitoria  
+                    self.tela.blit(self.imagem_youwin, (0, 0))
+                    pygame.display.update()
+                    pygame.time.wait(5000)  # 5 segundos antes de fechar
+            
                     self.rodando = False
                 else: # Derrota
                     game_over.play()
                     print("GAME OVER! Jack falhou na missão. As crianças do mundo inteiro ficaram sem presentes e Natal esse ano 💀")
+
+                    # Mostra a tela de game over
+                    self.tela.blit(self.imagem_gameover, (0, 0))
+                    pygame.display.update()
+                    pygame.time.wait(3000)
+                    
                     self.jack.vidas = 0 
                     self.rodando = False
 
