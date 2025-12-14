@@ -31,8 +31,10 @@ class Jogo:
         pygame.display.set_caption("O pesadelo de Jack")
         self.clock = pygame.time.Clock()
 
-        # Configurações para a interface (ajustar)
-        self.fonte = pygame.font.SysFont("Arial", 24, bold=True)
+        # Configurações pixel
+        self.fonte = pygame.font.Font('assets/pixel.ttf', 24)
+        self.fonte_titulo = pygame.font.Font('assets/pixel.ttf', 60)
+        self.fonte_botao = pygame.font.Font('assets/pixel.ttf', 36)
 
         # Inicialização do labirinto
         self.labirinto = Labirinto()
@@ -62,6 +64,14 @@ class Jogo:
         self.imagem_youwin = pygame.image.load('assets/youwin.png').convert_alpha() # Vitoria
         self.imagem_youwin = pygame.transform.scale(self.imagem_youwin, (WIDTH, HEIGHT))
 
+        # ADICIONA A IMAGEM DA TELA INICIAL
+        self.imagem_inicio = pygame.image.load('assets/INICIO.png').convert_alpha()
+        self.imagem_inicio = pygame.transform.scale(self.imagem_inicio, (WIDTH, HEIGHT))
+
+        # ADICIONA A IMAGEM DA TELA COMO JOGAR
+        self.imagem_como_jogar = pygame.image.load('assets/comojogar.png').convert_alpha()
+        self.imagem_como_jogar = pygame.transform.scale(self.imagem_como_jogar, (WIDTH, HEIGHT))
+
         # Lista de coletavéis no mapa 
         self.itens = []
         self.espalhar_itens()
@@ -73,6 +83,92 @@ class Jogo:
         self.intervalo_respawn_especial = 10000 
 
         self.rodando = True
+
+    def tela_inicial(self):
+        esperando = True
+        
+        # Definir os botões
+        botao_jogar = pygame.Rect(WIDTH - 420, HEIGHT // 2, 300, 70)
+        botao_como_jogar = pygame.Rect(WIDTH - 420, HEIGHT // 2 + 100, 300, 70)
+        
+        while esperando:
+            mouse_pos = pygame.mouse.get_pos()
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return False
+                
+                # Detectar clique do mouse
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if botao_jogar.collidepoint(mouse_pos):
+                        return True  # Começa o jogo
+                    if botao_como_jogar.collidepoint(mouse_pos):
+                        self.tela_como_jogar()  # Mostra instruções
+            
+            # Desenhar fundo
+            if hasattr(self, 'imagem_inicio'):
+                self.tela.blit(self.imagem_inicio, (0, 0))
+            else:
+                self.tela.fill((20, 20, 40))
+            
+            # Botão JOGAR
+            cor_jogar = (10, 35, 80) if botao_jogar.collidepoint(mouse_pos) else (5, 22, 60)
+            pygame.draw.rect(self.tela, cor_jogar, botao_jogar, border_radius=10)
+            pygame.draw.rect(self.tela, (255, 215, 0), botao_jogar, 3, border_radius=10)  # Borda amarela dourada
+            
+            texto_jogar = self.fonte_botao.render("JOGAR", True, (255, 255, 255))
+            texto_jogar_rect = texto_jogar.get_rect(center=botao_jogar.center)
+            self.tela.blit(texto_jogar, texto_jogar_rect)
+            
+            # Botão COMO JOGAR
+            cor_como = (10, 35, 80) if botao_como_jogar.collidepoint(mouse_pos) else (5, 22, 60)
+            pygame.draw.rect(self.tela, cor_como, botao_como_jogar, border_radius=10)
+            pygame.draw.rect(self.tela, (255, 215, 0), botao_como_jogar, 3, border_radius=10)  # Borda amarela dourada
+            
+            texto_como = self.fonte_botao.render("COMO JOGAR", True, (255, 255, 255))
+            texto_como_rect = texto_como.get_rect(center=botao_como_jogar.center)
+            self.tela.blit(texto_como, texto_como_rect)
+            
+            pygame.display.update()
+            self.clock.tick(FPS)
+        
+        return False
+
+    def tela_como_jogar(self):
+        mostrando = True
+        
+        botao_voltar = pygame.Rect(WIDTH // 2 - 125, HEIGHT - 100, 250, 65)
+        
+        while mostrando:
+            mouse_pos = pygame.mouse.get_pos()
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if botao_voltar.collidepoint(mouse_pos):
+                        mostrando = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        mostrando = False
+            
+            # Desenha a imagem de instruções
+            if hasattr(self, 'imagem_como_jogar'):
+                self.tela.blit(self.imagem_como_jogar, (0, 0))
+            else:
+                self.tela.fill((20, 20, 40))
+            
+            # Botão VOLTAR
+            cor_voltar = (10, 35, 80) if botao_voltar.collidepoint(mouse_pos) else (5, 22, 60)
+            pygame.draw.rect(self.tela, cor_voltar, botao_voltar, border_radius=10)
+            pygame.draw.rect(self.tela, (255, 215, 0), botao_voltar, 3, border_radius=10)  # Borda amarela dourada
+            
+            texto_voltar = self.fonte_botao.render("VOLTAR", True, (255, 255, 255))
+            texto_voltar_rect = texto_voltar.get_rect(center=botao_voltar.center)
+            self.tela.blit(texto_voltar, texto_voltar_rect)
+            
+            pygame.display.update()
+            self.clock.tick(FPS)
 
     # cria um novo morcego em posições aleatórias (Samara - Ajustado para evitar spawn na cara do jogador)
     def spawn_morcego(self):  
@@ -143,18 +239,23 @@ class Jogo:
             self.tela.blit(self.imagem_coracao, (10 + i * 36, 3)) # espaçamento de 36 pixels, altura 4 pixels, margem esquerda 12 pixels
 
         # Informações de coleta (temporário - apenas para visualização)
-        txt_abo = self.fonte.render(f"Abóboras: {self.jack.aboboras}", True, (255, 128, 0)) 
+        txt_pre = self.fonte.render(f"Presentes: {self.jack.presentes}/7", True, (0, 255, 0))
         txt_meia = self.fonte.render(f"Meias: {self.jack.meias}/7", True, (255, 255, 255)) 
-        txt_pre = self.fonte.render(f"Presentes: {self.jack.presentes}/7", True, (0, 255, 0)) 
+        txt_abo = self.fonte.render(f"Aboboras: {self.jack.aboboras}", True, (255, 128, 0)) 
         txt_esp = self.fonte.render(f"Especiais: {self.jack.especiais}", True, (255, 215, 0)) 
         self.tela.blit(txt_pre, (150, 10))
-        self.tela.blit(txt_meia, (350, 10))
-        self.tela.blit(txt_abo, (550, 10))
-        self.tela.blit(txt_esp, (750, 10))
+        self.tela.blit(txt_meia, (380, 10))
+        self.tela.blit(txt_abo, (580, 10))
+        self.tela.blit(txt_esp, (780, 10))
 
         
     # Executa o loop principal do jogo
     def executar(self):
+        # MOSTRA A TELA INICIAL PRIMEIRO
+        if not self.tela_inicial():
+            pygame.quit()
+            return
+        
         while self.rodando:
             self.tela.fill((0, 0, 0))
             agora = pygame.time.get_ticks()
@@ -275,7 +376,7 @@ class Jogo:
                     # Mostra a tela de vitoria  
                     self.tela.blit(self.imagem_youwin, (0, 0))
                     pygame.display.update()
-                    pygame.time.wait(5000)  # 5 segundos antes de fechar
+                    pygame.time.wait(3000)  # 3 segundos antes de fechar
             
                     self.rodando = False
                 else: # Derrota
