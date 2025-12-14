@@ -11,6 +11,17 @@ from src.items.presente import Presente
 from src.items.meia import Meia
 from src.items.presenteEspecial import presenteEspecial
 
+from src.sonoplastia import musica_de_fundo
+pygame.mixer.music.play(-1)
+
+from src.sonoplastia import abobora_ruim
+
+from src.sonoplastia import batida_morcego
+
+from src.sonoplastia import game_over
+
+from src.sonoplastia import meias_e_presentes
+
 class Jogo:
     # Inicializa o jogo
     def __init__(self):
@@ -187,6 +198,15 @@ class Jogo:
                 hitbox_jack = self.jack.rect.inflate(-10, -10)
                 for item in self.itens[:]:
                     if hitbox_jack.colliderect(item.rect):
+                        if isinstance(item, AboboraEstragada):
+                            abobora_ruim.play()
+                            
+                        if isinstance(item, Meia):
+                            meias_e_presentes.play()
+
+                        if isinstance(item, Presente):
+                            meias_e_presentes.play()
+
                         item.coletar(self.jack) 
                         self.itens.remove(item)
 
@@ -199,6 +219,7 @@ class Jogo:
                 for morcego in self.morcegos[:]:
                     if self.jack.rect.colliderect(morcego.rect):
                         if not self.jack.invencivel:
+                            batida_morcego.play()
                             if self.jack.receber_dano():
                                 self.morcegos.remove(morcego)
                                 print("Jack foi pego!")
@@ -229,6 +250,7 @@ class Jogo:
 
             # Verificar derrota por vidas
             if self.jack.vidas <= 0 or not self.jack.vivo:
+                game_over.play()
                 print("Jack perdeu todas as vidas! Fim de jogo.")
                 self.rodando = False
 
@@ -240,6 +262,7 @@ class Jogo:
                     # chamar a tela de vitória aqui
                     self.rodando = False
                 else: # Derrota
+                    game_over.play()
                     print("GAME OVER! Jack falhou na missão. As crianças do mundo inteiro ficaram sem presentes e Natal esse ano 💀")
                     self.jack.vidas = 0 
                     self.rodando = False

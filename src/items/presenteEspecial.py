@@ -3,6 +3,8 @@ import random
 
 from .itens import Item
 
+from src.sonoplastia import presente_especial
+
 class presenteEspecial(Item):
     # Representa um item coletável que concede bônus de pontuação e aumento de velocidade temporário
     # Ao coletar um presente especial, Jack ganha o dobro de presentes
@@ -41,6 +43,8 @@ class presenteEspecial(Item):
 
         # Boost de velocidade (ajustavel)
         jogador.velocidade = 5.5
+
+        presente_especial.play()
 
         # Gerenciador de tempo para que o aumento da velocidade seja temporário (5 segundos)(ajustavel)
         jogador.timer_do_bonus = pygame.time.get_ticks() # Marca a hora da coleta
