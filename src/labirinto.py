@@ -4,7 +4,9 @@ from src.cenarios import TILE, COR_PAREDE, COR_NATAL
 
 #mapa do labirinto
 class Labirinto:
+    # Define a estrutura física do mapa (caminhos, parede e o ponto de vitória)
     def __init__(self):
+        # Matriz do mapa
         self.mapa = [
             "11111111111111111111111111111111",
             "1J000000000001000000000000000001",
@@ -25,10 +27,11 @@ class Labirinto:
             "11111111111111111111111111111111"
         ]
 
+        # Dimensões do labirinto
         self.rows = len(self.mapa)
         self.cols = len(self.mapa[0])
 
-    #desenha o labirinto na tela
+    # Desenha o labirinto na tela
     def desenhar(self, tela):
         for row in range(self.rows):
             for col in range(self.cols):
@@ -41,7 +44,7 @@ class Labirinto:
                 elif tile == "N":
                     pygame.draw.rect(tela, COR_NATAL, (x, y, TILE, TILE))
 
-    #checa colisão com paredes
+    # Checa colisão com paredes
     def colide_parede(self, rect):
         for row in range(self.rows):
             for col in range(self.cols):
@@ -51,13 +54,25 @@ class Labirinto:
                         return True
         return False
 
-    #checa se Jack chegou no Natal
-    def chegou_no_natal(self, x, y):
-        col = x // TILE
-        row = y // TILE
-        return self.mapa[row][col] == "N"
+    def buscar_vagas(self):
+        # Retornar uma lista com as coordenadas vazias para sortear onde os objetos vão aparecer
+        vagas = []
+        for r in range(self.rows):
+            for c in range(self.cols):
+                if self.mapa[r][c] == "0" or self.mapa[r][c] == "J":
+                    vagas.append((c * TILE, r * TILE))
+        return vagas
 
-    #encontra a posição inicial do Jack no labirinto
+    # Checa se Jack chegou no Natal
+    def chegou_no_natal(self, x, y):
+        col = int(x // TILE)
+        row = int(y // TILE)
+
+        if 0 <= row < self.rows and 0 <= col < self.cols:
+            return self.mapa[row][col] == "N"
+        return False
+
+    # Encontra a posição inicial do Jack no labirinto
     def posicao_inicial_jack(self):
         for row in range(self.rows):
             for col in range(self.cols):

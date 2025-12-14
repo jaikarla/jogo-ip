@@ -12,14 +12,15 @@ class Jogador:
     # ---------------------------------------------------------------
 
     def __init__(self, x, y):
-        # posição inicial
+        # Posição inicial no mapa
         self.x = x
         self.y = y
 
-        # velocidade do personagem
-        self.velocidade = 3
+        # Velocidade do Jack
+        self.velocidade_original = 3.5
+        self.velocidade = self.velocidade_original
 
-        # tamanho do sprite
+        # Tamanho do sprite
         self.largura = TILE - 5
         self.altura = TILE - 5
 
@@ -33,10 +34,19 @@ class Jogador:
             hitbox_altura
         )
 
-        # vidas do jogador
+        # Vidas do jogador
         self.vidas = 3
+        self.vivo = True
 
-        # invencibilidade após dano
+        # Inventário do Jack e Power-ups
+        self.presentes = 0
+        self.meias =  0
+        self.aboboras = 0
+        self.especiais = 0 
+        self.bonus_ativo = False
+        self.timer_do_bonus = 0
+
+        # Invencibilidade após dano
         self.invencivel = False
         self.tempo_invencivel = 0
         self.duracao_invencivel = 1500  # ms (1.5s)
@@ -75,54 +85,75 @@ class Jogador:
                 self.invencivel = False
                 self.tempo_invencivel = 0
 
-    # movimentação do jogador
+    # Move o jogador conforme as teclas pressionadas
     def mover(self, teclas, labirinto):
         vel_x = 0
         vel_y = 0
 
-        # movimentação e troca de sprite
-        if teclas[pygame.K_UP]:
+        # Teclas utilizáveis (WASD, SETAS)
+        # Movimentação e troca de sprite:
+
+        # Cima
+        if teclas[pygame.K_UP] or teclas[pygame.K_w]:
             vel_y = -self.velocidade
             self.imagem_atual = self.img_costas
 
-        if teclas[pygame.K_DOWN]:
+        # Baixo
+        if teclas[pygame.K_DOWN] or teclas[pygame.K_s]:
             vel_y = self.velocidade
             self.imagem_atual = self.img_frente
 
-        if teclas[pygame.K_LEFT]:
+        # Esquerda
+        if teclas[pygame.K_LEFT] or teclas[pygame.K_a]:
             vel_x = -self.velocidade
             self.imagem_atual = self.img_esquerda
 
-        if teclas[pygame.K_RIGHT]:
+        # Direita
+        if teclas[pygame.K_RIGHT] or teclas[pygame.K_d]:
             vel_x = self.velocidade
             self.imagem_atual = self.img_direita
 
-        # -----------------------------------------------------------
-        # movimentação separada por eixo
-        self.mover_eixo(vel_x, 0, labirinto)
-        self.mover_eixo(0, vel_y, labirinto)
+        # Centralizar o Jack no labirinto para facilitar a navegação
+        TILE_SIZE = 40
+        
+        # Se mover na vertical, alinha horizontalmente ao centro do corredor
+        if vel_y != 0:
+            centro_x = (self.hitbox.centerx // TILE_SIZE) * TILE_SIZE + TILE_SIZE // 2
+            if abs(self.hitbox.centerx - centro_x) < 15:
+                self.hitbox.centerx = centro_x
+        
+        # Se mover na horizontal, alinha verticalmente ao centro do corredor
+        if vel_x != 0:
+            centro_y = (self.hitbox.centery // TILE_SIZE) * TILE_SIZE + TILE_SIZE // 2
+            if abs(self.hitbox.centery - centro_y) < 15:
+                self.hitbox.centery = centro_y
 
-        # atualiza posição do sprite com base na hitbox
-        self.rect.centerx = self.hitbox.centerx
-        self.rect.bottom = self.hitbox.bottom
+        # Movimento com colisão (Eixo por Eixo)
+        if vel_x != 0:
+            proximo_passo = self.hitbox.move(vel_x, 0)
+            if not labirinto.colide_parede(proximo_passo):
+                self.hitbox = proximo_passo
+        
+        if vel_y != 0:
+            proximo_passo = self.hitbox.move(0, vel_y)
+            if not labirinto.colide_parede(proximo_passo):
+                self.hitbox = proximo_passo
 
-    # ---------------------------------------------------------------
-    # move pixel por pixel 
-    def mover_eixo(self, dx, dy, labirinto):
-        passos = int(abs(dx + dy))
+        # Atualiza a posição visual
+        self.rect.center = self.hitbox.center
+        self.x, self.y = self.rect.topleft
 
-        for _ in range(passos):
-            novo_hitbox = self.hitbox.move(
-                1 if dx > 0 else -1 if dx < 0 else 0,
-                1 if dy > 0 else -1 if dy < 0 else 0
-            )
+    
+    # Desenha o personagem na tela
+    def desenhar(self, tela): # efeito visual de psicar ao bater em um morcego
+        if self.invencivel:
+            if (pygame.time.get_ticks() // 100) % 2 == 0:
+                tela.blit(self.imagem_atual, self.rect)
+        else:
+            tela.blit(self.imagem_atual, self.rect)
+    
+    def morrer(self):
+        # Alterar o estado de vida do personagem
+        self.vivo = False
+        print("GAME OVER - Jack não resistiu")
 
-            # só bloqueia se colidir com parede
-            if not labirinto.colide_parede(novo_hitbox):
-                self.hitbox = novo_hitbox
-            else:
-                break
-
-    # desenha o personagem na tela
-    def desenhar(self, tela):
-        tela.blit(self.imagem_atual, self.rect)
