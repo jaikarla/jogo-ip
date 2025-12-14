@@ -11,16 +11,18 @@ from src.items.presente import Presente
 from src.items.meia import Meia
 from src.items.presenteEspecial import presenteEspecial
 
-from src.sonoplastia import musica_de_fundo
-pygame.mixer.music.play(-1)
+from src.sonoplastia import (
+    inicio,
+    tocar_musica_fundo,
+    tocar_vitoria,
+    abobora_ruim,
+    batida_morcego,
+    game_over,
+    meias_e_presentes,
+    parar_musica
+)
 
-from src.sonoplastia import abobora_ruim
 
-from src.sonoplastia import batida_morcego
-
-from src.sonoplastia import game_over
-
-from src.sonoplastia import meias_e_presentes
 
 class Jogo:
     # Inicializa o jogo
@@ -85,6 +87,7 @@ class Jogo:
         self.rodando = True
 
     def tela_inicial(self):
+        inicio()
         esperando = True
         
         # Definir os botões
@@ -255,7 +258,8 @@ class Jogo:
         if not self.tela_inicial():
             pygame.quit()
             return
-        
+        tocar_musica_fundo()
+
         while self.rodando:
             self.tela.fill((0, 0, 0))
             agora = pygame.time.get_ticks()
@@ -358,6 +362,7 @@ class Jogo:
 
             # Verificar derrota por vidas
             if self.jack.vidas <= 0 or not self.jack.vivo:
+                parar_musica()
                 game_over.play()
                 print("Jack perdeu todas as vidas! Fim de jogo.")
 
@@ -371,12 +376,13 @@ class Jogo:
             if self.labirinto.chegou_no_natal(self.jack.hitbox.centerx,
                                               self.jack.hitbox.centery):
                 if self.jack.presentes >= 7 and self.jack.meias >= 7: 
+                    tocar_vitoria()
                     print("Jack chegou ao Natal 🎄")
 
                     # Mostra a tela de vitoria  
                     self.tela.blit(self.imagem_youwin, (0, 0))
                     pygame.display.update()
-                    pygame.time.wait(3000)  # 3 segundos antes de fechar
+                    pygame.time.wait(10000)  # 3 segundos antes de fechar
             
                     self.rodando = False
                 else: # Derrota
