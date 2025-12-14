@@ -251,7 +251,7 @@ class Jogo:
         
     # Executa o loop principal do jogo
     def executar(self):
-        # MOSTRA A TELA INICIAL PRIMEIRO
+        # Mostrar tela inicial primeiro 
         if not self.tela_inicial():
             pygame.quit()
             return
