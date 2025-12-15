@@ -14,9 +14,10 @@ class AboboraEstragada(Item):
     def __init__(self, x, y, labirinto):
         self.labirinto = labirinto
     
-        # Imagem temporária 
-        self.image = pygame.Surface((32,32))
-        self.image.fill((180, 100, 20))
+        # Imagem 
+        self.image = pygame.image.load('assets/itens/abobora_estragada.png').convert_alpha()
+
+        self.image = pygame.transform.scale(self.image, (40, 40))
 
         super().__init__(x, y)
         # Precisa passar a imagem oficial 
@@ -43,7 +44,7 @@ class AboboraEstragada(Item):
         jogador.aboboras+= 1
         
         # Penalidade de Velocidade (reduz em 30%)
-        jogador.velocidade *= 0.7
+        jogador.velocidade *= 0.6
 
         # Gerenciador de tempo para que o efeito seja temporário 
         jogador.timer_do_bonus = pygame.time.get_ticks()

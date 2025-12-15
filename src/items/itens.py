@@ -17,19 +17,19 @@ class Item: #base para todos os itens coletáveis
 class Presente(Item):
     def __init__(self, x, y):
         super().__init__(x, y) 
-        #add a imagem do presente
+        #add a imagem do presente --- já adicionada em presente.py
 
 class Meia(Item):
     def __init__(self, x, y):
         super().__init__(x, y)
-        #add a imagem da meia
+        #add a imagem da meia -- já adicionada em meia.py
 
 class AboboraEstragada(Item):
     def __init__(self, x, y):
         super().__init__(x, y)
-        #add a imagem da abóbora estragada
+        #add a imagem da abóbora estragada -- já adicionada em aboboraEstragada.py
 
 class PresenteEspecial(Item):
     def __init__(self, x, y):
         super().__init__(x, y)
-        #add a imagem do presente especial
+        #add a imagem do presente especial -- já adicionada em presenteEspecial.py

@@ -13,13 +13,9 @@ class Presente(Item):
     def __init__(self, x, y, labirinto):
         self.labirinto = labirinto
 
-        # imagem tempóraria
-        self.image = pygame.Surface((25, 25))
-        self.image.fill((34, 139, 34)) # verde
-
-        # linha vermelha
-        pygame.draw.rect(self.image, (255, 0, 0), (10, 0, 5, 25))
-        pygame.draw.rect(self.image, (255, 0, 0), (0, 10, 25, 5))
+        # imagem 
+        self.image = pygame.image.load('assets/itens/presente_simples.png').convert_alpha()
+        self.image = pygame.transform.scale(self.image, (38, 38))
 
         super().__init__(x, y) # precisa passar a imagem oficial
 

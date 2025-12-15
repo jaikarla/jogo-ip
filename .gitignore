@@ -2,8 +2,9 @@
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
 
-# Ambiente virtual (se existir)
+# Ambiente virtual
 venv/
 .env/
 

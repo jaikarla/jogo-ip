@@ -13,11 +13,11 @@ class Meia(Item):
     def __init__(self, x, y, labirinto):
         self.labirinto = labirinto
 
-        # imagem temporaria 
-        self.image = pygame.Surface((20, 25), pygame.SRCALPHA)
-        pygame.draw.rect(self.image, (200, 0, 0), (0, 5, 20, 20)) # Base vermelha
-        pygame.draw.rect(self.image, (255, 255, 255), (0, 0, 20, 7)) # Topo branco
-        
+        #imagem da meia
+        self.image = pygame.image.load('assets/itens/meia.png').convert_alpha()
+
+        self.image = pygame.transform.scale(self.image, (40, 40))
+
         super().__init__(x, y)
 
        # Controle de tempo para a troca de lugar

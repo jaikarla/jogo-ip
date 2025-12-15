@@ -13,11 +13,10 @@ class presenteEspecial(Item):
     
         self.labirinto = labirinto
 
-        # Imagem temporaria
-        self.image = pygame.Surface((25, 25))
-        self.image.fill((255, 215, 0)) # Cor Ouro
-        pygame.draw.rect(self.image, (255, 255, 255), (10, 0, 5, 25)) 
-        
+        # Imagem 
+        self.image = pygame.image.load('assets/itens/presente_especial.png').convert_alpha()
+        self.image = pygame.transform.scale(self.image, (42, 42))
+
         super().__init__(x, y) # precisa passar a imagem oficial
 
         # Controle de tempo para o teletransporte (5 segundos)
@@ -42,7 +41,7 @@ class presenteEspecial(Item):
         jogador.especiais += 1
 
         # Boost de velocidade (ajustavel)
-        jogador.velocidade = 5.5
+        jogador.velocidade = 6.0
 
         presente_especial.play()
 

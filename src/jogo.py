@@ -36,9 +36,14 @@ class Jogo:
         self.clock = pygame.time.Clock()
 
         # Configurações pixel
-        self.fonte = pygame.font.Font('assets/pixel.ttf', 24)
+        self.fonte = pygame.font.Font('assets/pixel.ttf', 28)
         self.fonte_titulo = pygame.font.Font('assets/pixel.ttf', 60)
         self.fonte_botao = pygame.font.Font('assets/pixel.ttf', 36)
+
+        # FUNDO DO JOGO (atrás do labirinto)     <<<<<<<<<<<<<-----------------------------------------------------------------------------------
+        self.imagem_fundo = pygame.image.load('assets/fundo3.jpeg').convert()
+
+        self.imagem_fundo = pygame.transform.scale(self.imagem_fundo, (WIDTH, HEIGHT))
 
         # Inicialização do labirinto
         self.labirinto = Labirinto()
@@ -63,30 +68,42 @@ class Jogo:
         # Lista de morcegos pra gerar
         self.morcegos = []
         self.tempo_spawn_morcego = 0
-        self.intervalo_spawn = 10000  # 12 segundos (ms)
-        self.max_morcegos = 2
+        self.intervalo_spawn = 12000  # 12 segundos (ms)
+        self.max_morcegos = 3
 
         # ADICIONA O CORAÇÃO/PNG DA VIDA
         self.imagem_coracao = pygame.image.load('assets/coracao.png').convert_alpha()
         self.imagem_coracao = pygame.transform.scale(self.imagem_coracao, (40, 40))
 
         # ADICIONA AS IMAGENS DE VITÓRIA E DERROTA
-        self.imagem_gameover = pygame.image.load('assets/gameover.png').convert_alpha() # Derrota
+        self.imagem_gameover = pygame.image.load('assets/telas/gameover.png').convert_alpha() # Derrota
         self.imagem_gameover = pygame.transform.scale(self.imagem_gameover, (WIDTH, HEIGHT))
 
-        self.imagem_youwin = pygame.image.load('assets/youwin.png').convert_alpha() # Vitoria
+        self.imagem_youwin = pygame.image.load('assets/telas/youwin.png').convert_alpha() # Vitoria
         self.imagem_youwin = pygame.transform.scale(self.imagem_youwin, (WIDTH, HEIGHT))
 
         # ADICIONA A IMAGEM DA TELA INICIAL
-        self.imagem_inicio = pygame.image.load('assets/INICIO.png').convert_alpha()
+        self.imagem_inicio = pygame.image.load('assets/telas/INICIO.png').convert_alpha()
         self.imagem_inicio = pygame.transform.scale(self.imagem_inicio, (WIDTH, HEIGHT))
 
         # ADICIONA A IMAGEM DA TELA COMO JOGAR
-        self.imagem_como_jogar = pygame.image.load('assets/comojogar.png').convert_alpha()
+        self.imagem_como_jogar = pygame.image.load('assets/telas/comojogar.png').convert_alpha()
         self.imagem_como_jogar = pygame.transform.scale(self.imagem_como_jogar, (WIDTH, HEIGHT))
 
         # Lista de coletavéis no mapa 
         self.itens = []
+
+        # Ícones dos itens coletáveis 
+        self.icone_presente = pygame.image.load('assets/itens/presente_simples.png').convert_alpha()
+        self.icone_meia = pygame.image.load('assets/itens/meia.png').convert_alpha()
+        self.icone_abobora = pygame.image.load('assets/itens/abobora_estragada.png').convert_alpha()
+        self.icone_especial = pygame.image.load('assets/itens/presente_especial.png').convert_alpha()
+
+        # Ajustar tamanho
+        self.icone_presente = pygame.transform.scale(self.icone_presente, (36, 36))
+        self.icone_meia = pygame.transform.scale(self.icone_meia, (36, 36))
+        self.icone_abobora = pygame.transform.scale(self.icone_abobora, (36, 36))
+        self.icone_especial = pygame.transform.scale(self.icone_especial, (36, 36))
 
         # timer para itens comuns
         self.tempo_ultimo_item_comum = 0
@@ -260,15 +277,30 @@ class Jogo:
         for i in range(self.jack.vidas):
             self.tela.blit(self.imagem_coracao, (10 + i * 36, 3)) # espaçamento de 36 pixels, altura 4 pixels, margem esquerda 12 pixels
 
-        # Informações de coleta (temporário - apenas para visualização)
-        txt_pre = self.fonte.render(f"Presentes: {self.jack.presentes}/7", True, (0, 255, 0))
-        txt_meia = self.fonte.render(f"Meias: {self.jack.meias}/7", True, (255, 255, 255)) 
-        txt_abo = self.fonte.render(f"Aboboras: {self.jack.aboboras}", True, (255, 128, 0)) 
-        txt_esp = self.fonte.render(f"Especiais: {self.jack.especiais}", True, (255, 215, 0)) 
-        self.tela.blit(txt_pre, (150, 10))
-        self.tela.blit(txt_meia, (380, 10))
-        self.tela.blit(txt_abo, (580, 10))
-        self.tela.blit(txt_esp, (780, 10))
+        # POSIÇÕES DO HUD
+        x_inicial = 200
+        y = 4
+        espacamento = 120
+
+        # PRESENTES
+        self.tela.blit(self.icone_presente, (x_inicial, y))
+        txt_presente = self.fonte.render(f"{self.jack.presentes}/7", True, (255, 255, 255))
+        self.tela.blit(txt_presente, (x_inicial + 40, y + 5))
+
+        # MEIAS
+        self.tela.blit(self.icone_meia, (x_inicial + espacamento, y))
+        txt_meia = self.fonte.render(f"{self.jack.meias}/7", True, (255, 255, 255))
+        self.tela.blit(txt_meia, (x_inicial + espacamento + 40, y + 5))
+
+        # ABÓBORAS
+        self.tela.blit(self.icone_abobora, (x_inicial + espacamento * 2, y))
+        txt_abo = self.fonte.render(f"{self.jack.aboboras}", True, (255, 255, 255))
+        self.tela.blit(txt_abo, (x_inicial + espacamento * 2 + 40, y + 5))
+
+        # ESPECIAIS
+        self.tela.blit(self.icone_especial, (x_inicial + espacamento * 3, y))
+        txt_esp = self.fonte.render(f"{self.jack.especiais}", True, (255, 255, 255))
+        self.tela.blit(txt_esp, (x_inicial + espacamento * 3 + 40, y + 5))
 
         
     # Executa o loop principal do jogo
@@ -280,7 +312,7 @@ class Jogo:
         tocar_musica_fundo()
 
         while self.rodando:
-            self.tela.fill((0, 0, 0))
+            self.tela.blit(self.imagem_fundo, (0, 0)) #------------------------- FUNDO DO JOGO
             agora = pygame.time.get_ticks()
             tempo_decorrido = agora - self.tempo_inicio
 
@@ -411,7 +443,7 @@ class Jogo:
                         self.jack.bonus_ativo = False
                         print("O efeito passou! Velocidade normalizada.")
 
-            # Desenhar tudo na tela
+            # DESENHAR TUDO NA TELA ---------------------------------------------------
             self.labirinto.desenhar(self.tela)
 
             # Desenha a porta ### raih
@@ -453,7 +485,7 @@ class Jogo:
                     # Mostra a tela de vitoria  
                     self.tela.blit(self.imagem_youwin, (0, 0))
                     pygame.display.update()
-                    pygame.time.wait(10000)  # 3 segundos antes de fechar
+                    pygame.time.wait(10000)  # 10 segundos antes de fechar
             
                     self.rodando = False
                 else: # Derrota

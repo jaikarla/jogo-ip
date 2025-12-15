@@ -17,8 +17,8 @@ class Morcego:
         self.velocidade = 0.7
 
         # tamanho do morcego
-        self.largura = TILE - 4
-        self.altura = TILE - 4
+        self.largura = TILE - 3
+        self.altura = TILE - 3
 
         # rect usado para colisão / desenho (inteiro)
         self.rect = pygame.Rect(
