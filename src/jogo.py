@@ -10,6 +10,8 @@ from src.items.aboboraEstragada import AboboraEstragada
 from src.items.presente import Presente
 from src.items.meia import Meia
 from src.items.presenteEspecial import presenteEspecial
+from src.porta_sprite import Porta
+from src.porta import pode_abrir_porta
 
 from src.sonoplastia import (
     inicio,
@@ -40,6 +42,16 @@ class Jogo:
 
         # Inicialização do labirinto
         self.labirinto = Labirinto()
+
+        # Posição da porta (onde tem "N" no mapa) ###### raih
+        x_porta, y_porta = self.labirinto.posicao_porta()
+
+        # Cria a porta do Natal ##### raih
+        self.porta = Porta(
+            x_porta,
+            y_porta,
+            TILE
+        )
 
         # Busca de espaços vazios
         vagas = self.labirinto.buscar_vagas()
@@ -282,6 +294,12 @@ class Jogo:
                 teclas = pygame.key.get_pressed()
                 self.jack.mover(teclas, self.labirinto)
 
+                # VERIFICA COLISÃO COM A PORTA
+                if self.porta.rect.colliderect(self.jack.hitbox): ############# raih
+                    if not pode_abrir_porta(self.jack):
+                        # impede o movimento
+                        self.jack.voltar_posicao()
+
                 # Atualiza a invencibilidade do Jack 
                 self.jack.atualizar_invencibilidade(self.clock.get_time())
 
@@ -396,6 +414,9 @@ class Jogo:
             # Desenhar tudo na tela
             self.labirinto.desenhar(self.tela)
 
+            # Desenha a porta ### raih
+            self.porta.desenhar(self.tela, self.jack)
+
             # Desenha itens
             for item in self.itens: 
                 self.tela.blit(item.image, item.rect)
@@ -424,7 +445,7 @@ class Jogo:
 
             # Verificar vitória
             if self.labirinto.chegou_no_natal(self.jack.hitbox.centerx,
-                                              self.jack.hitbox.centery):
+                                              self.jack.hitbox.centery, self.jack): #### raih
                 if self.jack.presentes >= 7 and self.jack.meias >= 7: 
                     tocar_vitoria()
                     print("Jack chegou ao Natal 🎄")
@@ -436,16 +457,9 @@ class Jogo:
             
                     self.rodando = False
                 else: # Derrota
-                    game_over.play()
-                    print("GAME OVER! Jack falhou na missão. As crianças do mundo inteiro ficaram sem presentes e Natal esse ano 💀")
-
-                    # Mostra a tela de game over
-                    self.tela.blit(self.imagem_gameover, (0, 0))
-                    pygame.display.update()
-                    pygame.time.wait(3000)
-                    
-                    self.jack.vidas = 0 
-                    self.rodando = False
+                    # Apenas impedir abrir a porta, sem fechar o jogo
+                    print("Jack precisa de mais presentes e meias para abrir a porta!")
+                    self.jack.voltar_posicao()
 
             pygame.display.update()
             self.clock.tick(FPS)

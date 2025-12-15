@@ -16,6 +16,8 @@ class Jogador:
         self.x = x
         self.y = y
 
+        self.posicao_anterior = (self.x, self.y)  # armazena posição anterior (raihh)
+
         # Velocidade do Jack
         self.velocidade_original = 3.5
         self.velocidade = self.velocidade_original
@@ -90,6 +92,9 @@ class Jogador:
         vel_x = 0
         vel_y = 0
 
+        # Salva a posição atual antes de se mover (raiih)
+        self.posicao_anterior = (self.hitbox.x, self.hitbox.y)
+
         # Teclas utilizáveis (WASD, SETAS)
         # Movimentação e troca de sprite:
 
@@ -156,4 +161,11 @@ class Jogador:
         # Alterar o estado de vida do personagem
         self.vivo = False
         print("GAME OVER - Jack não resistiu")
+
+    # se jack chegar na porta sem itens necessarios
+    def voltar_posicao(self): #raihh
+        # Volta para a posição anterior
+        self.hitbox.x, self.hitbox.y = self.posicao_anterior
+        self.rect.center = self.hitbox.center
+        self.x, self.y = self.rect.topleft
 

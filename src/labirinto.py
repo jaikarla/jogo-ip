@@ -1,6 +1,7 @@
 import pygame
 
 from src.cenarios import TILE, COR_PAREDE, COR_NATAL
+from src.porta import pode_abrir_porta ### raih
 
 #mapa do labirinto
 class Labirinto:
@@ -42,7 +43,7 @@ class Labirinto:
                 if tile == "1":
                     pygame.draw.rect(tela, COR_PAREDE, (x, y, TILE, TILE))
                 elif tile == "N":
-                    pygame.draw.rect(tela, COR_NATAL, (x, y, TILE, TILE))
+                    pass  # Não desenha nada, a porta vai aparecer por cima (raiih)
 
     # Checa colisão com paredes
     def colide_parede(self, rect):
@@ -64,12 +65,13 @@ class Labirinto:
         return vagas
 
     # Checa se Jack chegou no Natal
-    def chegou_no_natal(self, x, y):
+    def chegou_no_natal(self, x, y, jack):
         col = int(x // TILE)
         row = int(y // TILE)
 
         if 0 <= row < self.rows and 0 <= col < self.cols:
-            return self.mapa[row][col] == "N"
+            if self.mapa[row][col] == "N":
+                return True
         return False
 
     # Encontra a posição inicial do Jack no labirinto
@@ -78,3 +80,11 @@ class Labirinto:
             for col in range(self.cols):
                 if self.mapa[row][col] == "J":
                     return col * TILE, row * TILE
+                
+    def posicao_porta(self):
+        for row in range(self.rows):
+            for col in range(self.cols):
+                if self.mapa[row][col] == "N":
+                    return col * TILE, row * TILE
+    
+    
