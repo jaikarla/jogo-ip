@@ -1,4 +1,6 @@
 import pygame
+import random 
+
 from .itens import Item
 
 class AboboraEstragada(Item):
@@ -9,7 +11,8 @@ class AboboraEstragada(Item):
     # Quantidade máxima que o jogador pode coletar (ajustável)
     limite = 4
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, labirinto):
+        self.labirinto = labirinto
     
         # Imagem temporária 
         self.image = pygame.Surface((32,32))
@@ -17,6 +20,20 @@ class AboboraEstragada(Item):
 
         super().__init__(x, y)
         # Precisa passar a imagem oficial 
+
+        # Controle de tempo para a troca de lugar
+        self.ultimo_pulo = pygame.time.get_ticks()
+        self.intervalo_pulo = 10000
+
+    def atualizar(self):
+        # Lógica para fazer o item aparecer em outro lugar aleatoriamente
+        agora = pygame.time.get_ticks()
+
+        if agora - self.ultimo_pulo > self.intervalo_pulo:
+            vagas = self.labirinto.buscar_vagas()
+            nova_pos = random.choice(vagas)
+            self.rect.topleft = nova_pos
+            self.ultimo_pulo = agora
 
     
     def coletar(self, jogador):  

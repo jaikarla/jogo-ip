@@ -50,7 +50,6 @@ class Jogo:
         
         # Lista de morcegos pra gerar
         self.morcegos = []
-
         self.tempo_spawn_morcego = 0
         self.intervalo_spawn = 10000  # 12 segundos (ms)
         self.max_morcegos = 2
@@ -76,7 +75,15 @@ class Jogo:
 
         # Lista de coletavéis no mapa 
         self.itens = []
-        self.espalhar_itens()
+
+        # timer para itens comuns
+        self.tempo_ultimo_item_comum = 0
+        self.intervalo_spawn_comum = 3000
+
+        # Timers individuais para o "rodízio"
+        self.ultimo_spawn_meia = 0
+        self.ultimo_spawn_presente = 0
+        self.ultimo_spawn_abobora = 0
 
         # Variáveis de controle de tempo e respawn 
         self.tempo_inicio = pygame.time.get_ticks()
@@ -222,17 +229,17 @@ class Jogo:
             # Adicionar as abóboras
             for i in range(0, num_abo):
                 pos = locais_escolhidos[i]
-                self.itens.append(AboboraEstragada(pos[0], pos[1]))
+                self.itens.append(AboboraEstragada(pos[0], pos[1], self.labirinto))
 
             # Adicionar os presentes
             for i in range(num_abo, num_abo + num_pre):
                 pos = locais_escolhidos[i]
-                self.itens.append(Presente(pos[0], pos[1]))
+                self.itens.append(Presente(pos[0], pos[1], self.labirinto))
             
             # Adicionar as meias 
             for i in range(num_abo + num_pre, total_itens):
                 pos = locais_escolhidos[i] 
-                self.itens.append(Meia(pos[0], pos[1]))
+                self.itens.append(Meia(pos[0], pos[1], self.labirinto))
 
 
     # Desenha os elementos (Samara - mudei o nome pra ser mais lúdico quando implementar as imagens dos outros contadores)
@@ -278,6 +285,40 @@ class Jogo:
                 # Atualiza a invencibilidade do Jack 
                 self.jack.atualizar_invencibilidade(self.clock.get_time())
 
+                # GERENCIAMENTO DE ITENS NO MAPA
+                for item in self.itens:
+                    if hasattr(item, 'atualizar'):
+                        item.atualizar()
+
+                # Conta a quantidade atual de cada item para controle de limite
+                qtd_meias = len([i for i in self.itens if isinstance(i, Meia)])
+                qtd_presentes = len([i for i in self.itens if isinstance(i, Presente)])
+                qtd_aboboras = len([i for i in self.itens if isinstance(i, AboboraEstragada)])
+
+                # Meias: Aparecem a cada 4s se houver menos de 3
+                if qtd_meias < 3 and agora - self.ultimo_spawn_meia > 4000:
+                    vagas = self.labirinto.buscar_vagas()
+                    if vagas:
+                        pos = random.choice(vagas)
+                        self.itens.append(Meia(pos[0], pos[1], self.labirinto))
+                        self.ultimo_spawn_meia = agora
+
+                # Presentes: Aparecem a cada 4s se houver menos de 3
+                if qtd_presentes < 3 and agora - self.ultimo_spawn_presente > 4000:
+                    vagas = self.labirinto.buscar_vagas()
+                    if vagas:
+                        pos = random.choice(vagas)
+                        self.itens.append(Presente(pos[0], pos[1], self.labirinto))
+                        self.ultimo_spawn_presente = agora
+
+                # Abóboras: Aparecem a cada 4s se houver menos de 3
+                if qtd_aboboras < 3 and agora - self.ultimo_spawn_abobora > 4000:
+                    vagas = self.labirinto.buscar_vagas()
+                    if vagas:
+                        pos = random.choice(vagas)
+                        self.itens.append(AboboraEstragada(pos[0], pos[1], self.labirinto))
+                        self.ultimo_spawn_abobora = agora
+
                 # Reaparecimento do presente especial
                 tem_especial = any(isinstance(item, presenteEspecial) for item in self.itens)
                 if not tem_especial:
@@ -319,6 +360,15 @@ class Jogo:
                         if isinstance(item, Presente):
                             meias_e_presentes.play()
 
+
+                        # ZERAR RELÓGIO DE RESPQAWN QND PEGA O ITEM 
+                        if isinstance(item, Meia):
+                            self.ultimo_spawn_meia = agora
+                        elif isinstance(item, Presente):
+                            self.ultimo_spawn_presente = agora
+                        elif isinstance(item, AboboraEstragada):
+                            self.ultimo_spawn_abobora = agora
+                        
                         item.coletar(self.jack) 
                         self.itens.remove(item)
 
