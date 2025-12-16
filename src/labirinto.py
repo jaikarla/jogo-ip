@@ -10,7 +10,7 @@ class Labirinto:
         # Matriz do mapa
         self.mapa = [
             "11111111111111111111111111111111",
-            "1J000000000001000000000000000001",
+            "1J000000000000000000000000000001",
             "10111101111110101111111101111101",
             "10000100000000100000000100000001",
             "11110101111111111011111110111111",
@@ -21,7 +21,7 @@ class Labirinto:
             "10000001000100000000000000000001",
             "10111111011101111111111101111101",
             "10000000000001000000000001000001",
-            "11111111111111011111110111111111",
+            "11111111111101011111110111111111",
             "10000000000000010000000100000001",
             "10111111111111110111111101111101",
             "100000000000000000000000000000N1",
@@ -34,7 +34,7 @@ class Labirinto:
         self.cols = len(self.mapa[0])
 
         # Carrega a imagem da parede
-        self.img_parede = pygame.image.load('assets/parede2.jpeg').convert()
+        self.img_parede = pygame.image.load('assets/parede3.jpeg').convert()
         #ajusta pra tamanho do tile
         self.img_parede = pygame.transform.scale(self.img_parede, (TILE, TILE))
 

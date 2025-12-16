@@ -22,7 +22,7 @@ class Meia(Item):
 
        # Controle de tempo para a troca de lugar
         self.ultimo_pulo = pygame.time.get_ticks()
-        self.intervalo_pulo = 15000
+        self.intervalo_pulo = 20000
 
     def atualizar(self):
         # Lógica para fazer o item aparecer em outro lugar aleatoriamente

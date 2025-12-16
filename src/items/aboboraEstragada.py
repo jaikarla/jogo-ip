@@ -9,7 +9,7 @@ class AboboraEstragada(Item):
     # Aumenta o contador de abóboras
 
     # Quantidade máxima que o jogador pode coletar (ajustável)
-    limite = 4
+    limite = 5
 
     def __init__(self, x, y, labirinto):
         self.labirinto = labirinto

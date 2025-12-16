@@ -12,6 +12,7 @@ from src.items.meia import Meia
 from src.items.presenteEspecial import presenteEspecial
 from src.porta_sprite import Porta
 from src.porta import pode_abrir_porta
+from src.efeitos import Vinheta, Nevoa
 
 from src.sonoplastia import (
     inicio,
@@ -41,7 +42,7 @@ class Jogo:
         self.fonte_botao = pygame.font.Font('assets/pixel.ttf', 36)
 
         # FUNDO DO JOGO (atrás do labirinto)     <<<<<<<<<<<<<-----------------------------------------------------------------------------------
-        self.imagem_fundo = pygame.image.load('assets/fundo3.jpeg').convert()
+        self.imagem_fundo = pygame.image.load('assets/fundo1.jpeg').convert()
 
         self.imagem_fundo = pygame.transform.scale(self.imagem_fundo, (WIDTH, HEIGHT))
 
@@ -68,7 +69,7 @@ class Jogo:
         # Lista de morcegos pra gerar
         self.morcegos = []
         self.tempo_spawn_morcego = 0
-        self.intervalo_spawn = 12000  # 12 segundos (ms)
+        self.intervalo_spawn = 15000  # 15 segundos (ms)
         self.max_morcegos = 3
 
         # ADICIONA O CORAÇÃO/PNG DA VIDA
@@ -76,10 +77,10 @@ class Jogo:
         self.imagem_coracao = pygame.transform.scale(self.imagem_coracao, (40, 40))
 
         # ADICIONA AS IMAGENS DE VITÓRIA E DERROTA
-        self.imagem_gameover = pygame.image.load('assets/telas/gameover.png').convert_alpha() # Derrota
+        self.imagem_gameover = pygame.image.load('assets/game_over.png').convert_alpha() # Derrota
         self.imagem_gameover = pygame.transform.scale(self.imagem_gameover, (WIDTH, HEIGHT))
 
-        self.imagem_youwin = pygame.image.load('assets/telas/youwin.png').convert_alpha() # Vitoria
+        self.imagem_youwin = pygame.image.load('assets/ganhou.png').convert_alpha() # Vitoria
         self.imagem_youwin = pygame.transform.scale(self.imagem_youwin, (WIDTH, HEIGHT))
 
         # ADICIONA A IMAGEM DA TELA INICIAL
@@ -119,6 +120,9 @@ class Jogo:
         self.atraso_morcegos = 500 # Morcegos esperam meio segundo para começar a perseguir
         self.tempo_ultimo_especial = 0
         self.intervalo_respawn_especial = 10000 
+
+        self.vinheta = Vinheta(self.tela)
+        self.nevoa = Nevoa(self.tela)
 
         self.rodando = True
 
@@ -443,7 +447,7 @@ class Jogo:
                         self.jack.bonus_ativo = False
                         print("O efeito passou! Velocidade normalizada.")
 
-            # DESENHAR TUDO NA TELA ---------------------------------------------------
+            # DESENHAR TUDO NA TELA -------------------------------------------------------------------------------------------------------------
             self.labirinto.desenhar(self.tela)
 
             # Desenha a porta ### raih
@@ -459,6 +463,9 @@ class Jogo:
 
             # Desenha o Jack e as vidas
             self.jack.desenhar(self.tela)
+
+            self.nevoa.draw(self.tela)
+            self.vinheta.draw(self.tela)
             
             self.desenhar_elementos()
          

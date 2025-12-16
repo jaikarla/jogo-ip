@@ -21,7 +21,7 @@ class presenteEspecial(Item):
 
         # Controle de tempo para o teletransporte (5 segundos)
         self.ultimo_pulo = pygame.time.get_ticks()
-        self.intervalo_pulo = 10000
+        self.intervalo_pulo = 12000
 
     def atualizar(self):
         # Lógica para fazer o item aparecer em outro lugar aleatoriamente
