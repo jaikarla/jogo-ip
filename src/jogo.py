@@ -77,14 +77,14 @@ class Jogo:
         self.imagem_coracao = pygame.transform.scale(self.imagem_coracao, (40, 40))
 
         # ADICIONA AS IMAGENS DE VITÓRIA E DERROTA
-        self.imagem_gameover = pygame.image.load('assets/game_over.png').convert_alpha() # Derrota
+        self.imagem_gameover = pygame.image.load('assets/telas/gameover.jpeg').convert() # Derrota
         self.imagem_gameover = pygame.transform.scale(self.imagem_gameover, (WIDTH, HEIGHT))
 
-        self.imagem_youwin = pygame.image.load('assets/ganhou.png').convert_alpha() # Vitoria
+        self.imagem_youwin = pygame.image.load('assets/telas/ganhou.png').convert_alpha() # Vitoria
         self.imagem_youwin = pygame.transform.scale(self.imagem_youwin, (WIDTH, HEIGHT))
 
         # ADICIONA A IMAGEM DA TELA INICIAL
-        self.imagem_inicio = pygame.image.load('assets/telas/INICIO.png').convert_alpha()
+        self.imagem_inicio = pygame.image.load('assets/telas/inicio.jpeg').convert()
         self.imagem_inicio = pygame.transform.scale(self.imagem_inicio, (WIDTH, HEIGHT))
 
         # ADICIONA A IMAGEM DA TELA COMO JOGAR
@@ -126,14 +126,60 @@ class Jogo:
 
         self.rodando = True
 
+    def desenhar_botao_transparente(self, rect, cor, borda, texto, cor_texto):
+        botao_surface = pygame.Surface(rect.size, pygame.SRCALPHA)
+
+        # Cor com transparência (RGBA)
+        cor_com_alpha = (*cor, 170)   # 170 = transparência (0 a 255)
+
+        pygame.draw.rect(
+            botao_surface,
+            cor_com_alpha,
+            botao_surface.get_rect(),
+            border_radius=14
+        )
+
+        pygame.draw.rect(
+            botao_surface,
+            borda,
+            botao_surface.get_rect(),
+            2,
+            border_radius=14
+        )
+
+        self.tela.blit(botao_surface, rect.topleft)
+
+        # Texto (normal, sem transparência)
+        texto_render = self.fonte_botao.render(texto, True, cor_texto)
+        self.tela.blit(
+            texto_render,
+            texto_render.get_rect(center=rect.center)
+        )
+
     def tela_inicial(self):
         inicio()
         esperando = True
         
-        # Definir os botões
-        botao_jogar = pygame.Rect(WIDTH - 420, HEIGHT // 2, 300, 70)
-        botao_como_jogar = pygame.Rect(WIDTH - 420, HEIGHT // 2 + 100, 300, 70)
-        
+        # TAMANHO DOS BOTÕES
+        largura_botao = 260
+        altura_botao = 70
+        espaco = 40  # espaço entre os botões
+
+        # POSIÇÃO BASE (centralizada embaixo)
+        y_botao = HEIGHT - 160
+        x_centro = WIDTH // 2
+
+        # BOTÕES LADO A LADO
+        botao_jogar = pygame.Rect(x_centro - largura_botao - espaco // 2, y_botao, largura_botao, altura_botao)
+
+        botao_como_jogar = pygame.Rect( x_centro + espaco // 2, y_botao, largura_botao, altura_botao)
+                
+        # CORES (AJUSTAVEL)
+        COR_NORMAL = (35, 32, 70)
+        COR_HOVER = (55, 50, 110)
+        BORDA = (255, 170, 60)
+        TEXTO = (255, 200, 80)
+
         while esperando:
             mouse_pos = pygame.mouse.get_pos()
             
@@ -145,32 +191,20 @@ class Jogo:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if botao_jogar.collidepoint(mouse_pos):
                         return True  # Começa o jogo
+                    
                     if botao_como_jogar.collidepoint(mouse_pos):
                         self.tela_como_jogar()  # Mostra instruções
             
             # Desenhar fundo
-            if hasattr(self, 'imagem_inicio'):
-                self.tela.blit(self.imagem_inicio, (0, 0))
-            else:
-                self.tela.fill((20, 20, 40))
+            self.tela.blit(self.imagem_inicio, (0, 0))
             
-            # Botão JOGAR
-            cor_jogar = (10, 35, 80) if botao_jogar.collidepoint(mouse_pos) else (5, 22, 60)
-            pygame.draw.rect(self.tela, cor_jogar, botao_jogar, border_radius=10)
-            pygame.draw.rect(self.tela, (255, 215, 0), botao_jogar, 3, border_radius=10)  # Borda amarela dourada
-            
-            texto_jogar = self.fonte_botao.render("JOGAR", True, (255, 255, 255))
-            texto_jogar_rect = texto_jogar.get_rect(center=botao_jogar.center)
-            self.tela.blit(texto_jogar, texto_jogar_rect)
-            
-            # Botão COMO JOGAR
-            cor_como = (10, 35, 80) if botao_como_jogar.collidepoint(mouse_pos) else (5, 22, 60)
-            pygame.draw.rect(self.tela, cor_como, botao_como_jogar, border_radius=10)
-            pygame.draw.rect(self.tela, (255, 215, 0), botao_como_jogar, 3, border_radius=10)  # Borda amarela dourada
-            
-            texto_como = self.fonte_botao.render("COMO JOGAR", True, (255, 255, 255))
-            texto_como_rect = texto_como.get_rect(center=botao_como_jogar.center)
-            self.tela.blit(texto_como, texto_como_rect)
+            # BOTÃO JOGAR
+            cor = COR_HOVER if botao_jogar.collidepoint(mouse_pos) else COR_NORMAL
+            self.desenhar_botao_transparente(botao_jogar, cor, BORDA, "JOGAR", TEXTO)
+
+            # BOTÃO COMO JOGAR
+            cor = COR_HOVER if botao_como_jogar.collidepoint(mouse_pos) else COR_NORMAL
+            self.desenhar_botao_transparente(botao_como_jogar, cor, BORDA, "COMO JOGAR",TEXTO)
             
             pygame.display.update()
             self.clock.tick(FPS)
@@ -181,6 +215,12 @@ class Jogo:
         mostrando = True
         
         botao_voltar = pygame.Rect(WIDTH // 2 - 125, HEIGHT - 100, 250, 65)
+
+        # CORES IGUAIS À TELA INICIAL
+        COR_NORMAL = (35, 32, 70)
+        COR_HOVER  = (55, 50, 110)
+        BORDA      = (255, 170, 60)
+        TEXTO      = (255, 200, 80)
         
         while mostrando:
             mouse_pos = pygame.mouse.get_pos()
@@ -202,13 +242,8 @@ class Jogo:
                 self.tela.fill((20, 20, 40))
             
             # Botão VOLTAR
-            cor_voltar = (10, 35, 80) if botao_voltar.collidepoint(mouse_pos) else (5, 22, 60)
-            pygame.draw.rect(self.tela, cor_voltar, botao_voltar, border_radius=10)
-            pygame.draw.rect(self.tela, (255, 215, 0), botao_voltar, 3, border_radius=10)  # Borda amarela dourada
-            
-            texto_voltar = self.fonte_botao.render("VOLTAR", True, (255, 255, 255))
-            texto_voltar_rect = texto_voltar.get_rect(center=botao_voltar.center)
-            self.tela.blit(texto_voltar, texto_voltar_rect)
+            cor = COR_HOVER if botao_voltar.collidepoint(mouse_pos) else COR_NORMAL
+            self.desenhar_botao_transparente( botao_voltar, cor, BORDA, "VOLTAR", TEXTO)
             
             pygame.display.update()
             self.clock.tick(FPS)
@@ -298,7 +333,7 @@ class Jogo:
 
         # ABÓBORAS
         self.tela.blit(self.icone_abobora, (x_inicial + espacamento * 2, y))
-        txt_abo = self.fonte.render(f"{self.jack.aboboras}", True, (255, 255, 255))
+        txt_abo = self.fonte.render(f"{self.jack.aboboras}/5", True, (255, 255, 255))
         self.tela.blit(txt_abo, (x_inicial + espacamento * 2 + 40, y + 5))
 
         # ESPECIAIS

@@ -34,7 +34,7 @@ class Labirinto:
         self.cols = len(self.mapa[0])
 
         # Carrega a imagem da parede
-        self.img_parede = pygame.image.load('assets/parede3.jpeg').convert()
+        self.img_parede = pygame.image.load('assets/parede1.jpeg').convert()
         #ajusta pra tamanho do tile
         self.img_parede = pygame.transform.scale(self.img_parede, (TILE, TILE))
 

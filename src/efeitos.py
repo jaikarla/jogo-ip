@@ -21,7 +21,7 @@ class Nevoa:
             x = random.randint(0, self.surface.get_width())
             y = random.randint(0, self.surface.get_height())
             r = random.randint(20, 60)
-            alpha = random.randint(5, 15)
+            alpha = random.randint(8, 20) # transparência da mancha
 
             pygame.draw.circle(
                 self.surface,
