@@ -8,7 +8,7 @@ Este projeto foi desenvolvido como um dos requisitos para a conclusão da discip
 ## Integrantes da Equipe
 
   - Ana Clara Souza Bizarria <acsb2>
-  - Byanca Haially Candido de Souza <bhcs>
+  - Byanca Hayally Candido de Souza <bhcs>
   - Jaianny Karla de Oliveira Souza <jkos>
   - Maria Cláudia Silva Rocha <mcsr>
   - Raiana Laís Pereira Donato <rlpd>
