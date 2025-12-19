@@ -129,6 +129,10 @@ class Jogo:
 
         self.rodando = True
 
+    def reiniciar(self):
+        self.__init__()
+        self.executar()
+
     def desenhar_botao_transparente(self, rect, cor, borda, texto, cor_texto):
         botao_surface = pygame.Surface(rect.size, pygame.SRCALPHA)
 
@@ -520,31 +524,30 @@ class Jogo:
             self.desenhar_elementos()
          
 
-            # Verificar derrota por vidas
             if self.jack.vidas <= 0 or not self.jack.vivo:
                 parar_musica()
                 game_over.play()
-                print("Jack perdeu todas as vidas! Fim de jogo.")
 
-                # Mostra a tela de game over
                 self.tela.blit(self.imagem_gameover, (0, 0))
                 pygame.display.update()
-                pygame.time.wait(3000)  # 3 segundos antes de fechar
-                self.rodando = False
+                pygame.time.wait(3000)
+
+                self.reiniciar()
+                return
 
             # Verificar vitória
             if self.labirinto.chegou_no_natal(self.jack.hitbox.centerx,
                                               self.jack.hitbox.centery, self.jack): #### raih
                 if self.jack.presentes >= 7 and self.jack.meias >= 7: 
                     tocar_vitoria()
-                    print("Jack chegou ao Natal 🎄")
 
-                    # Mostra a tela de vitoria  
                     self.tela.blit(self.imagem_youwin, (0, 0))
                     pygame.display.update()
-                    pygame.time.wait(10000)  # 10 segundos antes de fechar
-            
-                    self.rodando = False
+                    pygame.time.wait(5000)  # 5s fica melhor
+
+                    self.reiniciar()
+                    return
+
                 else: # Derrota
                     # Apenas impedir abrir a porta, sem fechar o jogo
                     print("Jack precisa de mais presentes e meias para abrir a porta!")
