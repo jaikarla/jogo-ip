@@ -28,9 +28,7 @@ class Morcego:
             self.altura
         )
 
-        # -----------------------------------------------------------
         # carrega frames da animação
-        # -----------------------------------------------------------
         self.frames = [
             pygame.image.load('assets/inimigos/morcego1.png').convert_alpha(),
             pygame.image.load('assets/inimigos/morcego2.png').convert_alpha(),
@@ -51,9 +49,7 @@ class Morcego:
 
         self.imagem_atual = self.frames[0]
 
-    # ---------------------------------------------------------------
     # persegue o Jack
-    # ---------------------------------------------------------------
     def perseguir(self, jack):
         direcao = pygame.Vector2(
             jack.hitbox.centerx - self.rect.centerx,
@@ -73,9 +69,7 @@ class Morcego:
         # anima enquanto se move
         self.animar()
 
-    # ---------------------------------------------------------------
     # controla a animação das asas
-    # ---------------------------------------------------------------
     def animar(self):
         self.tempo_animacao += self.vel_animacao
 
@@ -84,8 +78,6 @@ class Morcego:
             self.frame_atual = (self.frame_atual + 1) % len(self.frames)
             self.imagem_atual = self.frames[self.frame_atual]
 
-    # ---------------------------------------------------------------
     # desenha o morcego na tela
-    # ---------------------------------------------------------------
     def desenhar(self, tela):
         tela.blit(self.imagem_atual, self.rect)

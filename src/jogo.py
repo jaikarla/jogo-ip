@@ -27,7 +27,6 @@ from src.sonoplastia import (
 )
 
 
-
 class Jogo:
     # Inicializa o jogo
     def __init__(self):
