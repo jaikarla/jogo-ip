@@ -22,7 +22,8 @@ from src.sonoplastia import (
     batida_morcego,
     game_over,
     meias_e_presentes,
-    parar_musica
+    parar_musica,
+    somporta
 )
 
 
@@ -31,6 +32,9 @@ class Jogo:
     # Inicializa o jogo
     def __init__(self):
         pygame.init()
+
+        self.inventario_completo = False
+        self.tocar_som_porta = False
 
         self.tela = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("O pesadelo de Jack")
@@ -359,6 +363,11 @@ class Jogo:
                 if event.type == pygame.QUIT:
                     self.rodando = False
 
+            if self.tocar_som_porta:
+                somporta.play()
+                self.tocar_som_porta = False
+
+
             # Só ocorre se Jack estiver vivo
             if self.jack.vivo:
                 # Movimentação do Jogador
@@ -447,9 +456,7 @@ class Jogo:
                             meias_e_presentes.play()
 
                         if isinstance(item, Presente):
-                            meias_e_presentes.play()
-
-
+                            meias_e_presentes.play()                            
                         # ZERAR RELÓGIO DE RESPQAWN QND PEGA O ITEM 
                         if isinstance(item, Meia):
                             self.ultimo_spawn_meia = agora
@@ -460,6 +467,15 @@ class Jogo:
                         
                         item.coletar(self.jack) 
                         self.itens.remove(item)
+
+                        if (
+                            self.jack.meias >= 7 and
+                            self.jack.presentes >= 7 and
+                            not self.inventario_completo
+                        ):
+                            self.inventario_completo = True
+                            self.tocar_som_porta = True
+
 
                         # Se coletar a quantidade limite de aboboras 
                         if self.jack.vidas <= 0:

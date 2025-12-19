@@ -16,6 +16,9 @@ meias_e_presentes.set_volume(0.8)
 
 presente_especial = pygame.mixer.Sound('assets/sons/mixkit-correct-answer-tone-2870.wav')
 
+somporta = pygame.mixer.Sound('assets/sons/door-3-open.wav')
+somporta.set_volume(1.0)
+
 def inicio():
     pygame.mixer.music.load('assets/sons/Keshco - Halloween.mp3')
     pygame.mixer.music.set_volume(0.5)
